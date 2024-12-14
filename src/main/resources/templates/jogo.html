@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca</title>
+
+    <!-- Inclusão do Bootstrap via CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/css/estilo.css">
+    <!-- Scripts personalizados -->
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <!-- Jogo da Forca -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="text-center">Jogo da Forca</h1>
+                </div>
+                <div class="card-body">
+                    <h2>Dica: <span th:text="${palavra.dica}"></span></h2>
+                    <p id="forca" class="lead">
+                        <!-- Exibe a palavra oculta com underscores -->
+                        <span th:text="${'_' * palavra.palavra.length()}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 10 Pontuações -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Top 10 Pontuações</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="usuario : ${topScores}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span th:text="${usuario.nickname}"></span>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <span th:text="${usuario.pontuacaoMaxima}"></span>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <span th:text="${usuario.dataMelhorPontuacao}"></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário para salvar a pontuação -->
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <form action="/jogo/resultado" method="post">
+                <div class="form-group">
+                    <label for="nickname">Digite seu Nickname</label>
+                    <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Nickname" required>
+                </div>
+                <div class="form-group">
+                    <label for="pontuacao">Pontuação</label>
+                    <input type="number" class="form-control" id="pontuacao" name="pontuacao" placeholder="Pontuação" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Pontuação</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts do Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
