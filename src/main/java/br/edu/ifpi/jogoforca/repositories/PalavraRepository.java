@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PalavraRepository extends JpaRepository<Palavra, Long> {
 
-    // A consulta agora limita os resultados a apenas um
-    @Query("SELECT p FROM Palavra p ORDER BY RAND()")
-    Palavra findRandomPalavra(); // Já estava correto para retornar uma palavra aleatória
+    // Modificando a query para retornar apenas uma palavra aleatória
+    @Query(value = "SELECT * FROM palavra ORDER BY RAND() LIMIT 1", nativeQuery = true)
+    Palavra findRandomPalavra();
 }

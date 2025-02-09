@@ -17,14 +17,19 @@ public class GameController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public String jogo(Model model) {
+    public String jogo(@RequestParam(required = false) String nickname, Model model) {
+        if (nickname == null || nickname.trim().isEmpty()) {
+            return "redirect:/";
+        }
+
         Palavra palavra = gameService.getRandomPalavra();
         model.addAttribute("palavra", palavra);
         model.addAttribute("topScores", usuarioService.getTopScores());
+        model.addAttribute("nickname", nickname);
         return "jogo";
     }
 
-    @PostMapping("/resultado")
+    @PostMapping("/salvar-pontuacao")
     @ResponseBody
     public void salvarPontuacao(@RequestParam String nickname, @RequestParam int pontuacao) {
         usuarioService.saveOrUpdateUsuario(nickname, pontuacao);
