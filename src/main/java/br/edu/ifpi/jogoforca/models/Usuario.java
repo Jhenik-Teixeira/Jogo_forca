@@ -8,9 +8,15 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true, length = 50)
     private String nickname;
-    private int pontuacaoMaxima;
-    private LocalDateTime dataMelhorPontuacao;
+
+    @Column(nullable = false)
+    private int pontuacaoMaxima = 0;  // Inicializa com 0
+
+    @Column(nullable = false)
+    private LocalDateTime dataMelhorPontuacao = LocalDateTime.now();  // Inicializa com data atual
 
     // Getters e Setters
     public Long getId() {
@@ -43,5 +49,15 @@ public class Usuario {
 
     public void setDataMelhorPontuacao(LocalDateTime dataMelhorPontuacao) {
         this.dataMelhorPontuacao = dataMelhorPontuacao;
+    }
+
+    // Método para atualizar pontuação se for maior que a atual
+    public boolean atualizarPontuacao(int novaPontuacao) {
+        if (novaPontuacao > this.pontuacaoMaxima) {
+            this.pontuacaoMaxima = novaPontuacao;
+            this.dataMelhorPontuacao = LocalDateTime.now();
+            return true;
+        }
+        return false;
     }
 }

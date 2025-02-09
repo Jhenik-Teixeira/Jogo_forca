@@ -23,6 +23,9 @@
                 <div class="card-body">
                     <h2>Dica: <span th:text="${palavra.dica}"></span></h2>
                     <p id="palavra" class="lead text-center display-4"></p>
+                    <div class="text-center mb-3">
+                        <h3>Pontuação Atual: <span id="pontuacao-atual">0</span></h3>
+                    </div>
                     <div id="letras-erradas" class="text-danger text-center mb-3">
                         Letras erradas: <span></span>
                     </div>
@@ -30,7 +33,7 @@
                         <input type="text" id="letra-input" maxlength="1" class="form-control form-control-lg text-center" style="width: 80px; margin: 0 auto;">
                     </div>
                     <div class="text-center">
-                        <button class="btn btn-primary btn-lg" onclick="tentarLetra()">Tentar Letra</button>
+                        <button class="btn btn-primary btn-lg" onclick="jogo.tentarLetra()">Tentar Letra</button>
                     </div>
                     <div class="mt-3 text-center">
                         <p>Tentativas restantes: <span id="tentativas">6</span></p>
@@ -83,109 +86,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <!-- Script do jogo -->
+<script src="/js/jogo.js"></script>
 <script th:inline="javascript">
-    // Recebe a palavra do Thymeleaf
-    const palavraOriginal = /*[[${palavra.palavra}]]*/ '';
-    let palavraAtual = Array(palavraOriginal.length).fill('_');
-    let letrasErradas = [];
-    let tentativasRestantes = 6;
-    let jogoTerminado = false;
-
-    // Atualiza a exibição inicial
-    document.addEventListener('DOMContentLoaded', function() {
-        atualizarPalavraExibida();
-        
-        // Adiciona evento de tecla para o input
-        document.getElementById('letra-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                tentarLetra();
-            }
-        });
-    });
-
-    function tentarLetra() {
-        if (jogoTerminado) return;
-
-        const input = document.getElementById('letra-input');
-        const letra = input.value.toLowerCase();
-        input.value = '';
-
-        if (!letra.match(/[a-z]/i)) {
-            alert('Por favor, digite uma letra válida');
-            return;
-        }
-
-        if (letrasErradas.includes(letra) || palavraAtual.includes(letra)) {
-            alert('Você já tentou esta letra!');
-            return;
-        }
-
-        let acertou = false;
-        for (let i = 0; i < palavraOriginal.length; i++) {
-            if (palavraOriginal[i].toLowerCase() === letra) {
-                palavraAtual[i] = palavraOriginal[i];
-                acertou = true;
-            }
-        }
-
-        if (!acertou) {
-            letrasErradas.push(letra);
-            tentativasRestantes--;
-            document.getElementById('tentativas').textContent = tentativasRestantes;
-        }
-
-        atualizarPalavraExibida();
-        verificarFimDeJogo();
-    }
-
-    function atualizarPalavraExibida() {
-        document.getElementById('palavra').textContent = palavraAtual.join(' ');
-        document.querySelector('#letras-erradas span').textContent = letrasErradas.join(', ');
-    }
-
-    function verificarFimDeJogo() {
-        if (!palavraAtual.includes('_')) {
-            jogoTerminado = true;
-            alert('Parabéns! Você venceu!');
-            salvarPontuacao(calcularPontuacao());
-        } else if (tentativasRestantes === 0) {
-            jogoTerminado = true;
-            alert('Game Over! A palavra era: ' + palavraOriginal);
-            salvarPontuacao(0);
-        }
-    }
-
-    function calcularPontuacao() {
-        // Pontuação base de 100 pontos
-        // Cada letra errada diminui 10 pontos
-        return Math.max(100 - (letrasErradas.length * 10), 0);
-    }
-
-    function salvarPontuacao(pontos) {
-        const nickname = document.getElementById('nickname').value;
-        
-        fetch('/jogo/salvar-pontuacao', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `nickname=${encodeURIComponent(nickname)}&pontuacao=${pontos}`
-        })
-        .then(response => {
-            if (response.ok) {
-                document.getElementById('pontuacao').value = pontos;
-                alert('Pontuação salva com sucesso!');
-                // Opcional: recarregar a página para atualizar o ranking
-                window.location.reload();
-            } else {
-                alert('Erro ao salvar pontuação');
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            alert('Erro ao salvar pontuação');
-        });
-    }
+    // Inicialização do jogo
+    const palavra = /*[[${palavra.palavra}]]*/ '';
+    const jogo = new JogoDaForca(palavra);
+    document.addEventListener('DOMContentLoaded', () => jogo.inicializar());
 </script>
 </body>
 </html>
