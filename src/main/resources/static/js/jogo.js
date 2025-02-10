@@ -6,17 +6,24 @@ class JogoDaForca {
         this.tentativasRestantes = 6;
         this.jogoTerminado = false;
         this.pontuacaoAtual = 0;
+        this.pontuacaoTotal = 0;
     }
 
     inicializar() {
         this.atualizarPalavraExibida();
         this.atualizarPontuacao();
+        this.atualizarImagem();
         
         document.getElementById('letra-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.tentarLetra();
             }
         });
+    }
+
+    atualizarImagem() {
+        const erros = 6 - this.tentativasRestantes;
+        document.getElementById('forca-img').src = `/images/forca${erros}.png`;
     }
 
     tentarLetra() {
@@ -49,6 +56,7 @@ class JogoDaForca {
             this.letrasErradas.push(letra);
             this.tentativasRestantes--;
             document.getElementById('tentativas').textContent = this.tentativasRestantes;
+            this.atualizarImagem();
         }
 
         this.atualizarPalavraExibida();
@@ -63,23 +71,51 @@ class JogoDaForca {
 
     atualizarPontuacao() {
         document.getElementById('pontuacao-atual').textContent = this.pontuacaoAtual;
+        document.getElementById('pontuacao-total').textContent = this.pontuacaoTotal;
     }
 
     verificarFimDeJogo() {
         if (!this.palavraAtual.includes('_')) {
-            this.jogoTerminado = true;
             this.pontuacaoAtual += (this.tentativasRestantes * 20);
+            this.pontuacaoTotal += this.pontuacaoAtual;
             this.atualizarPontuacao();
-            alert('Parabéns! Você venceu! Pontuação final: ' + this.pontuacaoAtual);
-            this.salvarPontuacao();
+            
+            this.carregarNovaPalavra();
         } else if (this.tentativasRestantes === 0) {
             this.jogoTerminado = true;
-            alert('Game Over! A palavra era: ' + this.palavraOriginal);
-            this.salvarPontuacao();
+            alert(`Game Over! A palavra era: ${this.palavraOriginal}\nPontuação total: ${this.pontuacaoTotal}`);
+            this.salvarPontuacao(this.pontuacaoTotal);
         }
     }
 
-    salvarPontuacao() {
+    carregarNovaPalavra() {
+        fetch('/jogo/nova-palavra')
+            .then(response => response.json())
+            .then(novaPalavra => {
+                this.palavraOriginal = novaPalavra.palavra;
+                this.palavraAtual = Array(novaPalavra.palavra.length).fill('_');
+                this.letrasErradas = [];
+                this.tentativasRestantes = 6;
+                this.pontuacaoAtual = 0;
+                
+                document.querySelector('h2').innerHTML = `Dica: <span>${novaPalavra.dica}</span>`;
+                
+                this.atualizarPalavraExibida();
+                this.atualizarImagem();
+                document.getElementById('tentativas').textContent = '6';
+                document.querySelector('#letras-erradas span').textContent = '';
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar nova palavra');
+                this.jogoTerminado = true;
+                this.salvarPontuacao(this.pontuacaoTotal);
+            });
+    }
+
+    salvarPontuacao(pontos) {
+        if (!this.jogoTerminado) return;
+
         const nickname = document.getElementById('nickname').value;
         
         fetch('/jogo/salvar-pontuacao', {
@@ -87,14 +123,12 @@ class JogoDaForca {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `nickname=${encodeURIComponent(nickname)}&pontuacao=${this.pontuacaoAtual}`
+            body: `nickname=${encodeURIComponent(nickname)}&pontuacao=${pontos}`
         })
-        .then(response => {
-            if (response.ok) {
-                alert('Pontuação salva com sucesso!');
-                setTimeout(() => {
-                    window.location.href = '/?message=Jogo+finalizado!';
-                }, 2000);
+        .then(response => response.text())
+        .then(url => {
+            if (url.startsWith('/')) {
+                window.location.href = url;  // Redireciona para o ranking
             } else {
                 alert('Erro ao salvar pontuação');
             }
@@ -103,5 +137,15 @@ class JogoDaForca {
             console.error('Erro:', error);
             alert('Erro ao salvar pontuação');
         });
+    }
+
+    finalizarJogo(vitoria) {
+        this.jogoTerminado = true;
+        if (vitoria) {
+            alert(`Parabéns! Você finalizou o jogo com ${this.pontuacaoTotal} pontos!`);
+        } else {
+            alert(`Fim de jogo! Sua pontuação total foi: ${this.pontuacaoTotal}`);
+        }
+        this.salvarPontuacao(this.pontuacaoTotal);
     }
 } 
