@@ -58,11 +58,20 @@ class JogoDaForca {
                     this.palavraAtual[i] = this.palavraOriginal[i];
                 }
             }
-        }
-
-        if (!acertou) {
+        } else {
             this.letrasErradas.push(letra);
             this.tentativasRestantes--;
+            
+            // Adiciona animação de shake ao errar
+            const palavraElement = document.getElementById('palavra');
+            palavraElement.classList.remove('shake'); // Remove primeiro para garantir
+            void palavraElement.offsetWidth; // Força o reflow
+            palavraElement.classList.add('shake');
+            
+            setTimeout(() => {
+                palavraElement.classList.remove('shake');
+            }, 500);
+            
             document.getElementById('tentativas').textContent = this.tentativasRestantes;
             this.atualizarImagem();
             document.querySelector('#letras-erradas span').textContent = this.letrasErradas.join(', ');
@@ -75,6 +84,7 @@ class JogoDaForca {
     // Atualiza a palavra exibida e as letras erradas
     atualizarPalavraExibida() {
         document.getElementById('palavra').textContent = this.palavraAtual.join(' ');
+        document.querySelector('#letras-erradas span').textContent = this.letrasErradas.join(', ');
     }
 
     atualizarPontuacao() {
@@ -84,24 +94,44 @@ class JogoDaForca {
  
     verificarFimDeJogo() {
         if (!this.palavraAtual.includes('_')) {
+            // Acertou a palavra
             this.pontuacaoAtual += (this.tentativasRestantes * 20);
             this.pontuacaoTotal += this.pontuacaoAtual;
             this.atualizarPontuacao();
             
-            this.carregarNovaPalavra();
+            setTimeout(() => {
+                this.carregarNovaPalavra();
+            }, 300);
         } else if (this.tentativasRestantes === 0) {
+            // Errou a palavra - fim de jogo
             this.jogoTerminado = true;
             
+            // Primeiro, remove as classes caso existam
+            const palavraElement = document.getElementById('palavra');
+            palavraElement.classList.remove('palavra-revelada');
+            palavraElement.classList.remove('shake');
+            
+            // Força o reflow do DOM
+            void palavraElement.offsetWidth;
+            
+            // Revela a palavra correta
             this.palavraAtual = Array.from(this.palavraOriginal);
             this.atualizarPalavraExibida();
             
-            const palavraElement = document.getElementById('palavra');
+            // Adiciona as classes de animação
             palavraElement.classList.add('palavra-revelada');
+            palavraElement.classList.add('shake');
             
+            // Remove a classe shake após a animação
+            setTimeout(() => {
+                palavraElement.classList.remove('shake');
+            }, 500);
+            
+            // Mostra mensagem e salva pontuação após as animações
             setTimeout(() => {
                 alert(`Game Over! A palavra era: ${this.palavraOriginal}\nPontuação total: ${this.pontuacaoTotal}`);
                 this.salvarPontuacao(this.pontuacaoTotal);
-            }, 500);
+            }, 1200); // Aumentado o delay para dar tempo de ver a animação
         }
     }
 
@@ -118,32 +148,48 @@ class JogoDaForca {
                     throw new Error('Palavra inválida recebida do servidor');
                 }
 
+                // Atualiza os dados do jogo
                 this.palavraOriginal = novaPalavra.palavra;
                 this.palavraAtual = Array(novaPalavra.palavra.length).fill('_');
                 this.letrasErradas = [];
                 this.letrasAcertadas.clear();
                 this.tentativasRestantes = 6;
                 this.pontuacaoAtual = 0;
+                this.jogoTerminado = false;
                 
+                // Atualiza a dica
                 const dicaElement = document.querySelector('.hint-box span');
                 if (dicaElement) {
                     dicaElement.textContent = novaPalavra.dica;
                 }
                 
-                this.atualizarPalavraExibida();
-                this.atualizarImagem();
+                // Limpa o input
+                const input = document.getElementById('letra-input');
+                if (input) {
+                    input.value = '';
+                }
                 
-                document.getElementById('tentativas').textContent = '6';
+                // Limpa as letras erradas
                 const letrasErradasSpan = document.querySelector('#letras-erradas span');
                 if (letrasErradasSpan) {
                     letrasErradasSpan.textContent = '';
                 }
+                
+                // Reseta a imagem da forca
+                this.atualizarImagem();
+                
+                // Atualiza a palavra exibida
+                this.atualizarPalavraExibida();
+                
+                // Atualiza tentativas
+                const tentativasElement = document.getElementById('tentativas');
+                if (tentativasElement) {
+                    tentativasElement.textContent = '6';
+                }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao carregar nova palavra. O jogo será finalizado.');
-                this.jogoTerminado = true;
-                this.salvarPontuacao(this.pontuacaoTotal);
+                alert('Erro ao carregar nova palavra. Por favor, recarregue a página.');
             });
     }
 
@@ -162,7 +208,7 @@ class JogoDaForca {
         .then(response => response.text())
         .then(url => {
             if (url.startsWith('/')) {
-                window.location.href = url;
+                window.location.href = url;  // Redireciona para o ranking
             } else {
                 alert('Erro ao salvar pontuação');
             }

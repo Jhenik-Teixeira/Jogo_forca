@@ -125,7 +125,7 @@
 <body class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="text-center mb-4">
                     <h1 class="game-title mb-3">Jogo da Forca</h1>
                     <h3 class="text-white">Bem-vindo, <span th:text="${nickname}" class="badge bg-light text-primary"></span>!</h3>
@@ -159,7 +159,9 @@
 
                     <!-- Palavra abaixo da imagem -->
                     <div class="text-center mb-4">
-                        <p id="palavra" class="word-display"></p>
+                        <div class="word-container">
+                            <p id="palavra" class="word-display mb-0"></p>
+                        </div>
                     </div>
 
                     <!-- Letras erradas -->
@@ -173,7 +175,10 @@
                             <input type="text" 
                                    id="letra-input" 
                                    maxlength="1" 
-                                   class="letter-input form-control form-control-lg mb-3">
+                                   class="letter-input"
+                                   placeholder="Digite uma letra"
+                                   autocomplete="off"
+                                   autocapitalize="none">
                             <button onclick="jogo.tentarLetra()" class="btn-custom">
                                 <i class="fas fa-paper-plane me-2"></i>Tentar Letra
                             </button>
@@ -182,7 +187,7 @@
 
                     <!-- Tentativas restantes -->
                     <div class="text-center">
-                        <p class="attempts-left">
+                        <p class="attempts-left mb-0">
                             <i class="fas fa-heart me-2"></i>
                             Tentativas restantes: <span id="tentativas">6</span>
                         </p>
