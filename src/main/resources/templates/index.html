@@ -1,35 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Forca</title>
-
-    <!-- Inclusão do Bootstrap via CDN -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
 </head>
-<body>
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Jogo da Forca</h2>
-
-            <!-- Formulário -->
-            <form action="/entrar" method="post">
-                <div class="form-group">
-                    <label for="nickname">Digite seu nickname</label>
-                    <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Digite seu nickname" required>
+<body class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="text-center mb-5">
+                    <h1 class="game-title">Jogo da Forca</h1>
+                    <p class="text-white mt-3">Teste seus conhecimentos e divirta-se!</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Jogar</button>
-            </form>
+                <div class="card-custom">
+                    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span th:text="${message}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/entrar" method="post" class="login-form">
+                        <div class="mb-4">
+                            <label for="nickname" class="form-label">
+                                <i class="fas fa-user me-2"></i>Digite seu nickname
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-custom" 
+                                   id="nickname" 
+                                   name="nickname" 
+                                   placeholder="Ex: JogadorPro123" 
+                                   required>
+                        </div>
+
+                        <button type="submit" class="btn-custom w-100">
+                            <i class="fas fa-play me-2"></i>Começar a Jogar
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="/jogo/ranking" class="text-decoration-none">
+                            <i class="fas fa-trophy me-2"></i>Ver Ranking
+                        </a>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p class="text-white">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Desenvolvido com <i class="fas fa-heart text-danger"></i> por IFPI
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Scripts do Bootstrap (opcional, para funcionalidades como dropdowns, modais, etc.) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

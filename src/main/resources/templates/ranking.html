@@ -4,42 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranking - Jogo da Forca</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
+<body class="py-5">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h1 class="text-center mb-0">🏆 Ranking de Pontuações 🏆</h1>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
-                        
-                        <table class="table table-hover">
-                            <thead class="thead-dark">
+                <h1 class="game-title text-center mb-4">🏆 Ranking 🏆</h1>
+                
+                <div class="card-custom">
+                    <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+                    
+                    <div class="ranking-table">
+                        <table class="table table-hover mb-0">
+                            <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Jogador</th>
-                                    <th scope="col">Pontuação</th>
-                                    <th scope="col">Data</th>
+                                    <th>#</th>
+                                    <th>Jogador</th>
+                                    <th>Pontuação</th>
+                                    <th>Data</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="score, stat : ${topScores}">
-                                    <th scope="row" th:text="${stat.count}">1</th>
-                                    <td th:text="${score.nickname}">Jogador</td>
-                                    <td th:text="${score.pontuacaoMaxima}">1000</td>
-                                    <td th:text="${#temporals.format(score.dataMelhorPontuacao, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+                                    <td th:text="${stat.count}">1</td>
+                                    <td>
+                                        <i class="fas fa-user me-2"></i>
+                                        <span th:text="${score.nickname}">Jogador</span>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-star me-2 text-warning"></i>
+                                        <span th:text="${score.pontuacaoMaxima}">1000</span>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <span th:text="${#temporals.format(score.dataMelhorPontuacao, 'dd/MM/yyyy HH:mm')}">01/01/2024</span>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
 
-                        <div class="text-center mt-4">
-                            <a href="/" class="btn btn-primary mr-2">Voltar ao Início</a>
-                            <a href="/jogo" class="btn btn-success">Jogar Novamente</a>
-                        </div>
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn-custom me-2">
+                            <i class="fas fa-home me-2"></i>Início
+                        </a>
+                        <a href="/jogo" class="btn-custom">
+                            <i class="fas fa-play me-2"></i>Jogar Novamente
+                        </a>
                     </div>
                 </div>
             </div>

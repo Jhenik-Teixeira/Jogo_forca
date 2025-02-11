@@ -4,56 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo da Forca</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="text-center">Jogo da Forca</h1>
-                    <h3 class="text-center">Bem-vindo, <span th:text="${nickname}"></span>!</h3>
-                </div>
-                <div class="card-body">
-                    <div class="text-center mb-4">
-                        <img id="forca-img" src="/images/forca0.png" alt="Forca" class="img-fluid" style="max-height: 300px;">
-                    </div>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #ff6b6b;
+            --background-color: #f8f9fa;
+            --text-color: #2d3436;
+        }
 
-                    <h2>Dica: <span th:text="${palavra.dica}"></span></h2>
-                    <p id="palavra" class="lead text-center display-4"></p>
-                    <div class="text-center mb-3">
-                        <h3>Pontuação da Rodada: <span id="pontuacao-atual">0</span></h3>
-                        <h3>Pontuação Total: <span id="pontuacao-total">0</span></h3>
-                    </div>
-                    <div id="letras-erradas" class="text-danger text-center mb-3">
-                        Letras erradas: <span></span>
-                    </div>
-                    <div class="text-center mb-3">
-                        <input type="text" id="letra-input" maxlength="1" class="form-control form-control-lg text-center" style="width: 80px; margin: 0 auto;">
-                    </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary btn-lg" onclick="jogo.tentarLetra()">Tentar Letra</button>
-                    </div>
-                    <div class="mt-3 text-center">
-                        <p>Tentativas restantes: <span id="tentativas">6</span></p>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .game-title {
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .score-display {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .letter-input {
+            width: 80px !important;
+            height: 80px !important;
+            font-size: 2rem !important;
+            text-align: center;
+            border: 3px solid var(--primary-color);
+            border-radius: 15px !important;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .game-btn {
+            background: var(--accent-color);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+            background: #ff5252;
+        }
+
+        .word-display {
+            font-size: 3rem;
+            letter-spacing: 0.5rem;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--primary-color);
+        }
+
+        .wrong-letters {
+            background: #fee2e2;
+            border-radius: 10px;
+            padding: 10px;
+            color: #ef4444;
+        }
+
+        .hint-box {
+            background: #e0e7ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .attempts-left {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .forca-image {
+            max-height: 300px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-4">
+                    <h1 class="game-title mb-3">Jogo da Forca</h1>
+                    <h3 class="text-white">Bem-vindo, <span th:text="${nickname}" class="badge bg-light text-primary"></span>!</h3>
+                </div>
+
+                <div class="game-card p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img id="forca-img" src="/images/forca0.png" alt="Forca" class="img-fluid forca-image mb-4">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="hint-box">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                Dica: <span th:text="${palavra.dica}" class="fw-bold"></span>
+                            </div>
+
+                            <div class="score-display mb-4">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <i class="fas fa-star me-2"></i>
+                                        Rodada: <span id="pontuacao-atual">0</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fas fa-trophy me-2"></i>
+                                        Total: <span id="pontuacao-total">0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p id="palavra" class="word-display text-center mb-4"></p>
+
+                            <div id="letras-erradas" class="wrong-letters mb-4">
+                                Letras erradas: <span></span>
+                            </div>
+
+                            <div class="text-center">
+                                <input type="text" id="letra-input" maxlength="1" 
+                                       class="letter-input form-control form-control-lg mb-3">
+                                <button onclick="jogo.tentarLetra()" class="btn-custom">
+                                    <i class="fas fa-paper-plane me-2"></i>Tentar Letra
+                                </button>
+                            </div>
+
+                            <div class="mt-3 text-center">
+                                <p class="attempts-left">
+                                    <i class="fas fa-heart me-2"></i>
+                                    Tentativas restantes: <span id="tentativas">6</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<input type="hidden" id="nickname" th:value="${nickname}">
+    <input type="hidden" id="nickname" th:value="${nickname}">
 
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script src="/js/jogo.js"></script>
-<script th:inline="javascript">
-    const palavra = /*[[${palavra.palavra}]]*/ '';
-    const jogo = new JogoDaForca(palavra);
-    document.addEventListener('DOMContentLoaded', () => jogo.inicializar());
-</script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/jogo.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const palavra = /*[[${palavra.palavra}]]*/ '';
+        const jogo = new JogoDaForca(palavra);
+        document.addEventListener('DOMContentLoaded', () => jogo.inicializar());
+        /*]]>*/
+    </script>
 </body>
 </html>

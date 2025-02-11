@@ -65,6 +65,7 @@ class JogoDaForca {
             this.tentativasRestantes--;
             document.getElementById('tentativas').textContent = this.tentativasRestantes;
             this.atualizarImagem();
+            document.querySelector('#letras-erradas span').textContent = this.letrasErradas.join(', ');
         }
 
         this.atualizarPalavraExibida();
@@ -74,7 +75,6 @@ class JogoDaForca {
     // Atualiza a palavra exibida e as letras erradas
     atualizarPalavraExibida() {
         document.getElementById('palavra').textContent = this.palavraAtual.join(' ');
-        document.querySelector('#letras-erradas span').textContent = this.letrasErradas.join(', ');
     }
 
     atualizarPontuacao() {
@@ -98,8 +98,17 @@ class JogoDaForca {
 
     carregarNovaPalavra() {
         fetch('/jogo/nova-palavra')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar nova palavra');
+                }
+                return response.json();
+            })
             .then(novaPalavra => {
+                if (!novaPalavra || !novaPalavra.palavra) {
+                    throw new Error('Palavra inválida recebida do servidor');
+                }
+
                 this.palavraOriginal = novaPalavra.palavra;
                 this.palavraAtual = Array(novaPalavra.palavra.length).fill('_');
                 this.letrasErradas = [];
@@ -107,16 +116,23 @@ class JogoDaForca {
                 this.tentativasRestantes = 6;
                 this.pontuacaoAtual = 0;
                 
-                document.querySelector('h2').innerHTML = `Dica: <span>${novaPalavra.dica}</span>`;
+                const dicaElement = document.querySelector('.hint-box span');
+                if (dicaElement) {
+                    dicaElement.textContent = novaPalavra.dica;
+                }
                 
                 this.atualizarPalavraExibida();
                 this.atualizarImagem();
+                
                 document.getElementById('tentativas').textContent = '6';
-                document.querySelector('#letras-erradas span').textContent = '';
+                const letrasErradasSpan = document.querySelector('#letras-erradas span');
+                if (letrasErradasSpan) {
+                    letrasErradasSpan.textContent = '';
+                }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                alert('Erro ao carregar nova palavra');
+                alert('Erro ao carregar nova palavra. O jogo será finalizado.');
                 this.jogoTerminado = true;
                 this.salvarPontuacao(this.pontuacaoTotal);
             });
@@ -137,7 +153,7 @@ class JogoDaForca {
         .then(response => response.text())
         .then(url => {
             if (url.startsWith('/')) {
-                window.location.href = url;  // Redireciona para o ranking
+                window.location.href = url;
             } else {
                 alert('Erro ao salvar pontuação');
             }
