@@ -91,8 +91,17 @@ class JogoDaForca {
             this.carregarNovaPalavra();
         } else if (this.tentativasRestantes === 0) {
             this.jogoTerminado = true;
-            alert(`Game Over! A palavra era: ${this.palavraOriginal}\nPontuação total: ${this.pontuacaoTotal}`);
-            this.salvarPontuacao(this.pontuacaoTotal);
+            
+            this.palavraAtual = Array.from(this.palavraOriginal);
+            this.atualizarPalavraExibida();
+            
+            const palavraElement = document.getElementById('palavra');
+            palavraElement.classList.add('palavra-revelada');
+            
+            setTimeout(() => {
+                alert(`Game Over! A palavra era: ${this.palavraOriginal}\nPontuação total: ${this.pontuacaoTotal}`);
+                this.salvarPontuacao(this.pontuacaoTotal);
+            }, 500);
         }
     }
 

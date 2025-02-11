@@ -63,15 +63,39 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+.input-group-custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
 .letter-input {
     width: 80px !important;
     height: 80px !important;
-    font-size: 2rem !important;
+    font-size: 2.5rem !important;
     text-align: center;
     border: 3px solid var(--primary-color);
     border-radius: 15px !important;
     background: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin: 0 auto !important;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.letter-input::placeholder {
+    font-size: 1rem;
+    text-transform: none;
+    font-weight: normal;
+}
+
+.letter-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.25);
+    outline: none;
 }
 
 .word-display {
@@ -79,6 +103,10 @@ body {
     letter-spacing: 0.5rem;
     font-family: 'Press Start 2P', cursive;
     color: var(--primary-color);
+    margin: 0;
+    padding: 20px 0;
+    text-align: center;
+    width: 100%;
 }
 
 .wrong-letters {
@@ -157,11 +185,48 @@ body {
 @media (max-width: 768px) {
     .word-display {
         font-size: 2rem;
+        letter-spacing: 0.3rem;
     }
     
     .letter-input {
         width: 60px !important;
         height: 60px !important;
         font-size: 1.5rem !important;
+    }
+}
+
+/* Container para a palavra */
+.word-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 20px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.word-container::-webkit-scrollbar {
+    display: none;
+}
+
+.palavra-revelada {
+    color: var(--error-color) !important;
+    animation: revelarPalavra 0.5s ease-in-out;
+}
+
+@keyframes revelarPalavra {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 } 

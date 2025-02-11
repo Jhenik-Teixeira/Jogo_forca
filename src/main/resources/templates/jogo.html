@@ -132,50 +132,60 @@
                 </div>
 
                 <div class="game-card p-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <img id="forca-img" src="/images/forca0.png" alt="Forca" class="img-fluid forca-image mb-4">
-                        </div>
-                        <div class="col-md-6">
-                            <div class="hint-box">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                Dica: <span th:text="${palavra.dica}" class="fw-bold"></span>
+                    <!-- Score Display no topo -->
+                    <div class="score-display mb-4">
+                        <div class="row">
+                            <div class="col-6">
+                                <i class="fas fa-star me-2"></i>
+                                Rodada: <span id="pontuacao-atual">0</span>
                             </div>
-
-                            <div class="score-display mb-4">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <i class="fas fa-star me-2"></i>
-                                        Rodada: <span id="pontuacao-atual">0</span>
-                                    </div>
-                                    <div class="col-6">
-                                        <i class="fas fa-trophy me-2"></i>
-                                        Total: <span id="pontuacao-total">0</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p id="palavra" class="word-display text-center mb-4"></p>
-
-                            <div id="letras-erradas" class="wrong-letters mb-4">
-                                Letras erradas: <span></span>
-                            </div>
-
-                            <div class="text-center">
-                                <input type="text" id="letra-input" maxlength="1" 
-                                       class="letter-input form-control form-control-lg mb-3">
-                                <button onclick="jogo.tentarLetra()" class="btn-custom">
-                                    <i class="fas fa-paper-plane me-2"></i>Tentar Letra
-                                </button>
-                            </div>
-
-                            <div class="mt-3 text-center">
-                                <p class="attempts-left">
-                                    <i class="fas fa-heart me-2"></i>
-                                    Tentativas restantes: <span id="tentativas">6</span>
-                                </p>
+                            <div class="col-6">
+                                <i class="fas fa-trophy me-2"></i>
+                                Total: <span id="pontuacao-total">0</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Dica -->
+                    <div class="hint-box mb-4">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Dica: <span th:text="${palavra.dica}" class="fw-bold"></span>
+                    </div>
+
+                    <!-- Imagem centralizada -->
+                    <div class="text-center mb-4">
+                        <img id="forca-img" src="/images/forca0.png" alt="Forca" class="img-fluid forca-image">
+                    </div>
+
+                    <!-- Palavra abaixo da imagem -->
+                    <div class="text-center mb-4">
+                        <p id="palavra" class="word-display"></p>
+                    </div>
+
+                    <!-- Letras erradas -->
+                    <div id="letras-erradas" class="wrong-letters mb-4 text-center">
+                        Letras erradas: <span></span>
+                    </div>
+
+                    <!-- Input e botão -->
+                    <div class="text-center mb-4">
+                        <div class="input-group-custom">
+                            <input type="text" 
+                                   id="letra-input" 
+                                   maxlength="1" 
+                                   class="letter-input form-control form-control-lg mb-3">
+                            <button onclick="jogo.tentarLetra()" class="btn-custom">
+                                <i class="fas fa-paper-plane me-2"></i>Tentar Letra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tentativas restantes -->
+                    <div class="text-center">
+                        <p class="attempts-left">
+                            <i class="fas fa-heart me-2"></i>
+                            Tentativas restantes: <span id="tentativas">6</span>
+                        </p>
                     </div>
                 </div>
             </div>
