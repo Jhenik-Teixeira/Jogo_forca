@@ -3,6 +3,7 @@ class JogoDaForca {
         this.palavraOriginal = palavra;
         this.palavraAtual = Array(palavra.length).fill('_');
         this.letrasErradas = [];
+        this.letrasAcertadas = new Set();
         this.tentativasRestantes = 6;
         this.jogoTerminado = false;
         this.pontuacaoAtual = 0;
@@ -25,7 +26,7 @@ class JogoDaForca {
         const erros = 6 - this.tentativasRestantes;
         document.getElementById('forca-img').src = `/images/forca${erros}.png`;
     }
-
+    
     tentarLetra() {
         if (this.jogoTerminado) return;
 
@@ -38,17 +39,24 @@ class JogoDaForca {
             return;
         }
 
-        if (this.letrasErradas.includes(letra) || this.palavraAtual.includes(letra)) {
+        if (this.letrasErradas.includes(letra) || this.letrasAcertadas.has(letra)) {
             alert('Você já tentou esta letra!');
             return;
         }
 
         let acertou = false;
-        for (let i = 0; i < this.palavraOriginal.length; i++) {
-            if (this.palavraOriginal[i].toLowerCase() === letra) {
-                this.palavraAtual[i] = this.palavraOriginal[i];
+        if (this.palavraOriginal.toLowerCase().includes(letra)) {
+            if (!this.letrasAcertadas.has(letra)) {
+                this.letrasAcertadas.add(letra);
+                const ocorrencias = this.palavraOriginal.toLowerCase().split(letra).length - 1;
+                this.pontuacaoAtual += (10 * ocorrencias);
                 acertou = true;
-                this.pontuacaoAtual += 10;
+            }
+
+            for (let i = 0; i < this.palavraOriginal.length; i++) {
+                if (this.palavraOriginal[i].toLowerCase() === letra) {
+                    this.palavraAtual[i] = this.palavraOriginal[i];
+                }
             }
         }
 
@@ -63,7 +71,7 @@ class JogoDaForca {
         this.atualizarPontuacao();
         this.verificarFimDeJogo();
     }
-
+    // Atualiza a palavra exibida e as letras erradas
     atualizarPalavraExibida() {
         document.getElementById('palavra').textContent = this.palavraAtual.join(' ');
         document.querySelector('#letras-erradas span').textContent = this.letrasErradas.join(', ');
@@ -73,7 +81,7 @@ class JogoDaForca {
         document.getElementById('pontuacao-atual').textContent = this.pontuacaoAtual;
         document.getElementById('pontuacao-total').textContent = this.pontuacaoTotal;
     }
-
+ 
     verificarFimDeJogo() {
         if (!this.palavraAtual.includes('_')) {
             this.pontuacaoAtual += (this.tentativasRestantes * 20);
@@ -95,6 +103,7 @@ class JogoDaForca {
                 this.palavraOriginal = novaPalavra.palavra;
                 this.palavraAtual = Array(novaPalavra.palavra.length).fill('_');
                 this.letrasErradas = [];
+                this.letrasAcertadas.clear();
                 this.tentativasRestantes = 6;
                 this.pontuacaoAtual = 0;
                 

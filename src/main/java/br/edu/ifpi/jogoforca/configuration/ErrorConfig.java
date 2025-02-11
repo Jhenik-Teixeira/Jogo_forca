@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ErrorConfig {
-    
+    // Tratamento de erro global 
     @ExceptionHandler(Exception.class)
     public String handleError(Exception ex, Model model) {
         model.addAttribute("error", ex.getMessage());
